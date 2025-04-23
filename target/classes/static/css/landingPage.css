@@ -1,0 +1,30 @@
+h1 {
+    color: white;
+}
+
+body {
+    background-image: url('/img/wallpaper.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin-top: 100px;
+}
+
+button {
+    background-color: red;
+    color: white;
+    padding: 16px 32px;      /* Increased padding for a larger size */
+    margin: 10px;
+    font-size: 20px;         /* Larger text */
+    border: none;
+    border-radius: 12px;     /* Rounded corners */
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+
+button:hover {
+    background-color: darkred;
+}

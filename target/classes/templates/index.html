@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Tic-Tac-Toe</title>
+  <link rel="stylesheet" type="text/css" th:href="@{/css/landingPage.css}">
+  <link th:href="@{/css/toastr.css}" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Welcome to Tic-Tac-Toe</h1>
+<button onclick="location.href='/game?type=start'">Start New Game</button>
+<button onclick="location.href='/game?type=join'">Join Existing Game</button>
+
+<script th:src="@{/js/lib/jquery-3.5.1.min.js}"></script>
+<script th:src="@{/js/lib/toastr.js}"></script>
+<script>
+  // Check for error message on page load
+  window.onload = function() {
+    const errorMessage = localStorage.getItem("errorMessage");
+    if (errorMessage) {
+      toastr.error(errorMessage);
+      localStorage.removeItem("errorMessage"); // Clear the message after showing
+    }
+  };
+</script>
+</body>
+</html>
+
