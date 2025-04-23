@@ -11,3 +11,5 @@ https://en.wikipedia.org/wiki/Tic-tac-toe. The project needs to have a separate 
 5. A UI showing a basic Tic-Tac-Toe board (don’t worry about making it pretty) and exercising the APIs to make the moves. The UI should assume the second player is in front of the same PC if a second move is done in a row (switching between two players assumed to be playing together on the same computer locally) or allow the move from a different PC in case a second user joins using the game ID. After the second move the game can only continue either locally or from different clients. 
 6. A UI for when a game ends showing the winner and allowing to go back to the start screen. 
 
+Main page Address in the browser to run the game:
+http://localhost:8080/index
