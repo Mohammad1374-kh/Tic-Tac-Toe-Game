@@ -1,5 +1,8 @@
 package com.mohammad.tictactoewebsocket.enumeration;
 
+/**
+ * Enum representing the possible states of a Tic-Tac-Toe game.
+ */
 public enum GameState {
     WAITING_FOR_PLAYER("Waiting for player."),
     PLAYER1_TURN("Player 1's turn."),
