@@ -19,6 +19,13 @@ import java.util.HashMap;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+/**
+ * Unit tests for the {@link MessageController} class.
+ * <p>
+ * This test class verifies the behavior of {@code MessageController} methods when interacting
+ * with the {@link TicTacToeService} and {@link SimpMessagingTemplate}.
+ * </p>
+ */
 @ExtendWith(MockitoExtension.class)
 public class MessageControllerTest {
     @Mock
@@ -30,6 +37,9 @@ public class MessageControllerTest {
     @InjectMocks
     private MessageController messageController;
 
+    /**
+     * Tests that {@code joinGame} returns an error message when no previous game exists for the player.
+     */
     @Test
     public void testJoinGameReturnsErrorIfGameIsNull() {
         JoinMessage joinMessage = new JoinMessage();
@@ -45,6 +55,9 @@ public class MessageControllerTest {
         Assertions.assertEquals("No previous game exists!", ((TicTacToeMessage) result).getContent());
     }
 
+    /**
+     * Tests that {@code joinGame} returns a valid game message when a game is found.
+     */
     @Test
     public void testJoinGameReturnsGameMessage() {
         JoinMessage joinMessage = new JoinMessage();
@@ -64,6 +77,9 @@ public class MessageControllerTest {
         Assertions.assertEquals(mockGame.getGameId(), accessor.getSessionAttributes().get("gameId"));
     }
 
+    /**
+     * Tests that {@code startGame} returns a valid game message when a new game is started.
+     */
     @Test
     public void testStartGameReturnsGameMessage() {
         JoinMessage startMessage = new JoinMessage();
@@ -83,6 +99,9 @@ public class MessageControllerTest {
         Assertions.assertEquals(mockGame.getGameId(), accessor.getSessionAttributes().get("gameId"));
     }
 
+    /**
+     * Tests that {@code leaveGame} correctly calls the {@link TicTacToeService#playerLeft(String, SimpMessagingTemplate)} method.
+     */
     @Test
     public void testLeaveGameCallsService() {
         PlayerMessage msg = new PlayerMessage();
@@ -91,6 +110,9 @@ public class MessageControllerTest {
         verify(gameService).playerLeft("player1", messagingTemplate);
     }
 
+    /**
+     * Tests that {@code leaveEarly} correctly calls the {@link TicTacToeService#handleEarlyLeave(String, SimpMessagingTemplate)} method.
+     */
     @Test
     public void testLeaveEarlyCallsService() {
         PlayerMessage msg = new PlayerMessage();
@@ -99,6 +121,9 @@ public class MessageControllerTest {
         verify(gameService).handleEarlyLeave("player2", messagingTemplate);
     }
 
+    /**
+     * Tests that {@code makeMove} correctly calls the {@link TicTacToeService#makeMove(String, String, int, SimpMessagingTemplate)} method.
+     */
     @Test
     public void testMakeMoveCallsService() {
         TicTacToeMessage msg = new TicTacToeMessage();
