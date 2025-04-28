@@ -5,6 +5,10 @@ class GameController {
         this.player = null;
     }
 
+    /**
+     * Sends a message to the server using the STOMP client.
+     * @param {Object} message - The message to be sent. Must contain at least a "type" field.
+     */
     sendMessage(message) {
         this.stompClient.send(`/app/${message.type}`, {}, JSON.stringify(message));
     }
@@ -34,6 +38,10 @@ class GameController {
         });
     }
 
+    /**
+     * Sends a move message to the server.
+     * @param {Number} move - The index of the cell where the move should be made.
+     */
     makeMove(move) {
         this.sendMessage({
             type: "game.move",
@@ -69,6 +77,11 @@ class GameController {
         ui.updateAll(this.game);
     }
 
+    /**
+     * Converts a message received from the server into a game object.
+     * @param {Object} message - The message received.
+     * @returns {Object} The game object.
+     */
     messageToGame(message) {
         return {
             gameId: message.gameId,
@@ -81,6 +94,10 @@ class GameController {
         };
     }
 
+    /**
+     * Handles a message received from the server.
+     * @param {Object} message - The message received.
+     */
     handleMessage(message) {
         const handlers = {
             "game.join": () => this.updateGame(message),
@@ -149,6 +166,11 @@ class UIController {
         });
     }
 
+    /**
+     * Displays a success message with the name of the winning player.
+     * @param {String} winner - The name of the winning player.
+     * @param board - The board object to get the winning player moves that caused victory
+     */
     showWinner(winner, board) {
         toastr.success(`The winner is ${winner}!`);
         const winningPositions = this.getWinnerPositions(board);
