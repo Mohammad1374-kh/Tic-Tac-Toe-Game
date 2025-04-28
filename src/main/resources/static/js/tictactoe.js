@@ -257,27 +257,38 @@ class UIController {
 function setupBackToHomeButton(controller) {
     const btn = document.getElementById("backToHomeBtn");
     if (!btn) return;
+
     btn.addEventListener("click", () => {
-        if (!controller.game) return window.location.href = "/index";
+        if (!controller.game) {
+            window.location.href = "/index";
+            return;
+        }
 
-        const cellsFilled = controller.game.board.flat().filter(c => c !== " ").length;
-        const inProgress = controller.game.gameState === 'PLAYER1_TURN' || controller.game.gameState === 'PLAYER2_TURN';
+        const { board, gameState } = controller.game;
+        const cellsFilled = board.flat().filter(c => c !== " ").length;
+        const inProgress = gameState === 'PLAYER1_TURN' || gameState === 'PLAYER2_TURN';
 
-        if (inProgress && cellsFilled > 1) {
-            if (confirm("Are you sure you want to leave the game? You will forfeit and your opponent will win.")) {
+        if (!inProgress) {
+            window.location.href = "/index";
+            return;
+        }
+
+        if (cellsFilled > 1) {
+            const confirmLeave = confirm("Are you sure you want to leave the game? You will forfeit and your opponent will win.");
+            if (confirmLeave) {
                 controller.sendMessage({ type: "game.leave", player: controller.player });
-                window.location.href = "/index";
+            } else {
+                return; // User canceled
             }
-        } else if (inProgress && cellsFilled <= 1) {
+        } else {
             controller.sendMessage({
                 type: "game.leaveEarly",
                 player: controller.player,
                 message: "Opponent left the game. Since less than 2 moves were made, the game is saved for later."
             });
-            window.location.href = "/index";
-        } else {
-            window.location.href = "/index";
         }
+
+        window.location.href = "/index";
     });
 }
 
