@@ -8,27 +8,60 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+/**
+ * Service class that manages the flow of Tic-Tac-Toe games.
+ * It communicates with the TicTacToeManager to handle player actions and sends updates through WebSocket messaging.
+ */
 @Service
 public class TicTacToeService {
     private final TicTacToeManager ticTacToeManager;
 
+    /**
+     * Constructs a new TicTacToeService with a TicTacToeManager dependency.
+     *
+     * @param ticTacToeManager the manager responsible for managing games
+     */
     @Autowired
     public TicTacToeService(TicTacToeManager ticTacToeManager) {
         this.ticTacToeManager = ticTacToeManager;
     }
 
+    /**
+     * Allows a player to join an existing ongoing game.
+     *
+     * @param player the player's identifier
+     * @return the game the player joined, or null if none
+     */
     public TicTacToe joinGame(String player) {
         return ticTacToeManager.joinGame(player);
     }
 
+    /**
+     * Starts a new game or lets the player join a waiting game.
+     *
+     * @param player the player's identifier
+     * @return the game the player started or joined
+     */
     public TicTacToe startGame(String player) {
         return ticTacToeManager.startGame(player);
     }
 
+    /**
+     * Removes a player from a game.
+     *
+     * @param player the player's identifier
+     */
     public void leaveGame(String player) {
         ticTacToeManager.leaveGame(player);
     }
 
+    /**
+     * Handles a situation where a player leaves early (e.g., before making sufficient moves <= 1).
+     * Sends a notification to the opponent.
+     *
+     * @param player             the player who left
+     * @param messagingTemplate  the WebSocket messaging template
+     */
     public void handleEarlyLeave(String player, SimpMessagingTemplate messagingTemplate) {
         TicTacToe game = ticTacToeManager.getGameByPlayer(player);
         if (game != null) {
@@ -39,6 +72,15 @@ public class TicTacToeService {
         }
     }
 
+    /**
+     * Processes a player's move in the game and updates the game state accordingly.
+     * Sends game updates or error messages via WebSocket.
+     *
+     * @param player             the player making the move
+     * @param gameId             the game identifier
+     * @param move               the move (0-8) corresponding to the board position
+     * @param messagingTemplate  the WebSocket messaging template
+     */
     public void makeMove(String player, String gameId, int move, SimpMessagingTemplate messagingTemplate) {
         TicTacToe game = ticTacToeManager.getGame(gameId);
         if (game == null || game.isGameOver()) {
@@ -66,6 +108,12 @@ public class TicTacToeService {
         }
     }
 
+    /**
+     * Handles the case where a player leaves during an ongoing game and updates the opponent about the situation.
+     *
+     * @param player             the player who left
+     * @param messagingTemplate  the WebSocket messaging template
+     */
     public void playerLeft(String player, SimpMessagingTemplate messagingTemplate) {
         TicTacToe game = ticTacToeManager.getGameByPlayer(player);
         if (game != null) {
@@ -77,6 +125,13 @@ public class TicTacToeService {
         }
     }
 
+    /**
+     * Sends an error message via WebSocket to a specific game channel.
+     *
+     * @param messagingTemplate the WebSocket messaging template
+     * @param gameId             the game identifier
+     * @param content            the error message content
+     */
     private void sendErrorMessage(SimpMessagingTemplate messagingTemplate, String gameId, String content) {
         TicTacToeMessage errorMessage = new TicTacToeMessage();
         errorMessage.setType("error");

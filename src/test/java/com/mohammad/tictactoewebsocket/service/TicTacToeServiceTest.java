@@ -13,12 +13,22 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Unit tests for the {@link TicTacToeService} class, which provides game-related services
+ * such as joining a game, starting a game, making moves, handling player leaves, and broadcasting messages.
+ * This class uses {@link Mockito} for mocking dependencies such as {@link TicTacToeManager} and {@link SimpMessagingTemplate}.
+ * The tests verify that the service interacts correctly with the {@link TicTacToeManager}, performs the correct actions,
+ * and sends appropriate messages using the messaging template.
+ */
 @ExtendWith(MockitoExtension.class)
 public class TicTacToeServiceTest {
     private TicTacToeManager manager;
     private SimpMessagingTemplate messagingTemplate;
     private TicTacToeService service;
 
+    /**
+     * Sets up the test environment, initializing the necessary mocks and the service to be tested.
+     */
     @BeforeEach
     void setUp() {
         manager = mock(TicTacToeManager.class);
@@ -26,6 +36,10 @@ public class TicTacToeServiceTest {
         service = new TicTacToeService(manager);
     }
 
+    /**
+     * Tests that the {@link TicTacToeService#joinGame(String)} method delegates to the {@link TicTacToeManager#joinGame(String)}
+     * method and returns the expected result.
+     */
     @Test
     void testJoinGameDelegatesToManager() {
         TicTacToe mockGame = new TicTacToe("Alice", "Bob");
@@ -37,6 +51,10 @@ public class TicTacToeServiceTest {
         verify(manager).joinGame("Alice");
     }
 
+    /**
+     * Tests that the {@link TicTacToeService#startGame(String)} method delegates to the {@link TicTacToeManager#startGame(String)}
+     * method and returns the expected result.
+     */
     @Test
     void testStartGameDelegatesToManager() {
         TicTacToe mockGame = new TicTacToe("Alice", null);
@@ -48,12 +66,20 @@ public class TicTacToeServiceTest {
         verify(manager).startGame("Alice");
     }
 
+    /**
+     * Tests that the {@link TicTacToeService#leaveGame(String)} method delegates to the {@link TicTacToeManager#leaveGame(String)}
+     * method, ensuring the correct behavior when a player leaves the game.
+     */
     @Test
     void testLeaveGameDelegatesToManager() {
         service.leaveGame("Alice");
         verify(manager).leaveGame("Alice");
     }
 
+    /**
+     * Tests that the {@link TicTacToeService#handleEarlyLeave(String, SimpMessagingTemplate)} method sends a message
+     * indicating that a player left early when they leave the game before it is finished.
+     */
     @Test
     void testHandleEarlyLeaveSendsMessage() {
         TicTacToe mockGame = new TicTacToe("Alice", "Bob");
@@ -70,6 +96,10 @@ public class TicTacToeServiceTest {
         assertTrue(msg.getContent().contains("Opponent left the game"));
     }
 
+    /**
+     * Tests that the {@link TicTacToeService#makeMove(String, String, int, SimpMessagingTemplate)} method sends an error
+     * message if the game is not found.
+     */
     @Test
     void testMakeMoveWhenGameNotFoundSendsError() {
         when(manager.getGame("123")).thenReturn(null);
@@ -79,6 +109,10 @@ public class TicTacToeServiceTest {
         verify(messagingTemplate).convertAndSend(eq("/topic/game.123"), any(TicTacToeMessage.class));
     }
 
+    /**
+     * Tests that the {@link TicTacToeService#makeMove(String, String, int, SimpMessagingTemplate)} method sends an error
+     * message if the game is in the waiting state and a move is attempted.
+     */
     @Test
     void testMakeMoveWhenGameWaitingSendsError() {
         TicTacToe mockGame = new TicTacToe("Alice", null);
@@ -90,6 +124,10 @@ public class TicTacToeServiceTest {
         verify(messagingTemplate).convertAndSend(eq("/topic/game.123"), any(TicTacToeMessage.class));
     }
 
+    /**
+     * Tests that the {@link TicTacToeService#makeMove(String, String, int, SimpMessagingTemplate)} method processes
+     * a valid move, updates the game state, and sends the move along with a game-over message if the game ends.
+     */
     @Test
     void testMakeMoveValidTurnSendsMoveAndGameOverIfEnded() {
         TicTacToe mockGame = spy(new TicTacToe("Alice", "Bob"));
@@ -103,6 +141,10 @@ public class TicTacToeServiceTest {
         verify(messagingTemplate).convertAndSend(eq("/topic/game.123"), any(TicTacToeMessage.class));
     }
 
+    /**
+     * Tests that the {@link TicTacToeService#playerLeft(String, SimpMessagingTemplate)} method sends a message indicating
+     * that the player left and removes the game from the manager.
+     */
     @Test
     void testPlayerLeftSendsMessageAndRemovesGame() {
         TicTacToe mockGame = new TicTacToe("Alice", "Bob");

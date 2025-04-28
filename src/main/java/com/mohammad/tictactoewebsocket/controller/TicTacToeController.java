@@ -7,10 +7,19 @@ import org.springframework.web.servlet.ModelAndView;
 
 import java.util.Arrays;
 
+/**
+ * Controller class for handling HTTP requests related to the Tic-Tac-Toe game page.
+ */
 @Controller
 public class TicTacToeController {
 
-
+    /**
+     * Handles GET requests to the "/game" endpoint.
+     *
+     * Initializes an empty 3x3 Tic-Tac-Toe board and returns the "game" view.
+     *
+     * @return a ModelAndView object containing the game view and an empty board
+     */
     @GetMapping("/game")
     public ModelAndView game() {
         ModelAndView modelAndView = new ModelAndView("game"); // game.html
